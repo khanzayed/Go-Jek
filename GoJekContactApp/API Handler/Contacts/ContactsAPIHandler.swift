@@ -15,7 +15,7 @@ class ContactsAPIHandler: APIHandler {
     }
     
     internal func getContacts(params: [String: Any]?, completion:  @escaping (ContactDataModel) -> Void) {
-        let url = baseURL // append the end url here if required
+        let url = baseURL + "/contacts.json"
         
         printCURLRequest(url: url, params: params, method: .GET)
         request(url, method: .GET, parameters: nil) { (jsonResponse, errorMessage) in

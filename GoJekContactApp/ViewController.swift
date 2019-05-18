@@ -13,11 +13,18 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        ContactsAPIHandler().getContacts(params: nil) { (dataModel) in
-            print("Hello")
+        ContactsAPIHandler().getContacts(params: nil) { [weak self] (dataModel) in
+            guard let _ = self else {
+                return
+            }
+            
+            if dataModel.contactsList.count > 0 {
+                
+            } else {
+                print(dataModel.errMessage ?? "")
+            }
         }
     }
-
 
 }
 

@@ -12,7 +12,7 @@ class APIHandler: NSObject {
     
     internal var baseURL : String {
         get{
-            return "http://gojek-contacts-app.herokuapp.com"
+            return "https://gojek-contacts-app.herokuapp.com"
         }
     }
     
@@ -23,8 +23,8 @@ class APIHandler: NSObject {
     }
     
     //MARK: API Calls
-    internal func request(_ url: String, method: HTTPMethod, parameters: [String:Any]?, completion: @escaping ([String:Any]?, String?) -> Void) {
-        var request = URLRequest(url: URL(string: baseURL)!)
+    internal func request(_ url: String, method: HTTPMethod, parameters: [String:Any]?, completion: @escaping (Any?, String?) -> Void) {
+        var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = getHeaders()
         
@@ -39,28 +39,34 @@ class APIHandler: NSObject {
             }
         }
         
+        print("\n")
+        printCURLRequest(url: url, params: parameters, method: method)
         
-        URLSession.shared.dataTask(with: request) { (responseData, urlResponse, error) in
+        let dataRequest = URLSession.shared.dataTask(with: request) { (responseData, urlResponse, error) in
+            print("Response of API -> \(url) \n")
+            
             if let err = error {
+                print(err.localizedDescription)
                 completion(nil, err.localizedDescription)
             } else if let data = responseData {
                 do {
-                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String:Any] {
-                        completion(jsonResponse, nil)
-                    } else {
-                        completion(nil, "Response data is not in proper format")
-                    }
+                    let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
+                    
+                    print(jsonResponse)
+                    completion(jsonResponse, nil)
                 } catch let parsingError {
+                    print(parsingError.localizedDescription)
                     completion(nil, parsingError.localizedDescription)
                 }
             }
         }
+        dataRequest.resume()
     }
 }
 
 extension APIHandler {
     
-    internal func printCURLRequest(url:String, params:[String:Any]?, method: HTTPMethod) {
+    fileprivate func printCURLRequest(url:String, params:[String:Any]?, method: HTTPMethod) {
         var curlString = "THE CURL REQUEST:\n"
         curlString += "curl -X \(method) \\\n"
         

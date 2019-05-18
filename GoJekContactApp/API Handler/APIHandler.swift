@@ -62,6 +62,19 @@ class APIHandler: NSObject {
         }
         dataRequest.resume()
     }
+    
+    internal func getData(fromURLStr url: String, completion: @escaping (Data?) -> Void) {
+        let url = URL(string: url)!
+        
+        let dataRequest = URLSession.shared.dataTask(with: url, completionHandler: { (responseData, urlResponse, error) in
+            if let _ = error {
+                completion(nil)
+            } else if let data = responseData {
+                completion(data)
+            }
+        })
+        dataRequest.resume()
+    }
 }
 
 extension APIHandler {

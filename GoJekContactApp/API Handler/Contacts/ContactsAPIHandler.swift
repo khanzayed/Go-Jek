@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class ContactsAPIHandler: APIHandler {
     
@@ -47,6 +48,16 @@ class ContactsAPIHandler: APIHandler {
         request(url, method: .PUT, parameters: params) { (jsonResponse, errorStr) in
             let contactDataModel = ContactDataModel(jsonResponse, errorMessage: errorStr)
             completion(contactDataModel)
+        }
+    }
+    
+    internal func getUserImage(_ url:String, completion:  @escaping (UIImage?) -> Void) {
+        getData(fromURLStr: url) { (data) in
+            if let imageData = data, let image = UIImage(data: imageData) {
+                completion(image)
+            } else {
+                completion(nil)
+            }
         }
     }
     

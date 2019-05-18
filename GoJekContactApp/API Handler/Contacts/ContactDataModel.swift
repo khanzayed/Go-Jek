@@ -8,11 +8,11 @@
 
 import Foundation
 
-class ContactDataModel: AppDataModel {
+class ContactsDataModel: AppDataModel {
     
     var contactsList:[Contact] = []
     
-    override init(_ jsonResponse: Any, errorMessage: String?) {
+    override init(_ jsonResponse: Any?, errorMessage: String?) {
         super.init(jsonResponse, errorMessage: errorMessage)
         
         if let list = super.list {
@@ -22,7 +22,21 @@ class ContactDataModel: AppDataModel {
     
 }
 
-struct Contact {
+class ContactDataModel: AppDataModel {
+    
+    var contact:Contact?
+    
+    override init(_ jsonResponse: Any?, errorMessage: String?) {
+        super.init(jsonResponse, errorMessage: errorMessage)
+        
+        if let details = super.details {
+            contact = Contact(withDetail: details)
+        }
+    }
+    
+}
+
+class Contact {
     
     var id: Int
     var firstName: String
@@ -31,7 +45,7 @@ struct Contact {
     var isFavorite: Bool
     var contactURLStr: String?
     
-    init(withDetail detail: [String: Any]) {
+    fileprivate init(withDetail detail: [String: Any]) {
         id = detail["id"] as! Int
         firstName = detail["first_name"] as! String
         lastName = detail["last_name"] as? String

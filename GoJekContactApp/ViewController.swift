@@ -13,7 +13,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        ContactsAPIHandler().getContacts(params: nil) { [weak self] (dataModel) in
+        ContactsAPIHandler().getContacts { [weak self] (dataModel) in
             guard let _ = self else {
                 return
             }

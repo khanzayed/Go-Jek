@@ -14,7 +14,7 @@ class AppDataModel {
     var list: [[String:Any]]? // If the response is in form of array
     var details: [String:Any]? // If the response is in form of dictionary
     
-    init(_ jsonResponse: Any, errorMessage: String?) {
+    init(_ jsonResponse: Any?, errorMessage: String?) {
         if let str = errorMessage  {
             errMessage = str
             

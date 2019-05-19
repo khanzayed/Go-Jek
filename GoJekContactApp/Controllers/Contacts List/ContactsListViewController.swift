@@ -28,7 +28,7 @@ class ContactsListViewController: UIViewController {
                     
                     alertVC.addAction(okAction)
                     DispatchQueue.main.async {
-                        self?.navigationController?.present(alertVC, animated: true, completion: nil)
+                        self.navigationController?.present(alertVC, animated: true, completion: nil)
                     }
                 }
             }

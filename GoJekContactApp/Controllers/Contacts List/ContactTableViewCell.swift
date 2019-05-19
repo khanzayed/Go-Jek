@@ -14,14 +14,10 @@ class ContactTableViewCell: UITableViewCell {
     @IBOutlet weak var favImageView: UIImageView!
     @IBOutlet weak var nameLbl: UILabel!
     
-    var contactCellViewModel: ContactCellViewModel? {
-        didSet {
-            if let value = contactCellViewModel {
-                userImageView.image = nil
-                favImageView.isHidden = !value.isFavorite
-                nameLbl.text = value.name
-            }
-        }
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        userImageView.layer.contents = userImageView.bounds.height / 2
     }
-
+    
 }

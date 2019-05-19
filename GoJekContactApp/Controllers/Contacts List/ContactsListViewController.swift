@@ -15,12 +15,12 @@ class ContactsListViewController: UIViewController {
     var contactsViewModel: ContactsListViewModel? {
         didSet {
             if let viewModel = contactsViewModel {
-                if viewModel.contactsList.count > 0 {
+                if viewModel.getContactsCount() > 0{
                     DispatchQueue.main.async {
                         self.contactsTableView.reloadData()
                     }
                 } else {
-                    print(viewModel.errorMessage ?? "")
+                    print(viewModel.getErrorMessage())
                 }
             }
         }
@@ -38,7 +38,7 @@ class ContactsListViewController: UIViewController {
                 return
             }
             
-            strongSelf.contactsViewModel = ContactsListViewModelFromModel(dataModel: dataModel)
+            strongSelf.contactsViewModel = dataModel
         }
     }
     
@@ -55,33 +55,47 @@ extension ContactsListViewController: UITableViewDataSource, UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let list = contactsViewModel?.contactsList {
-            return list.count
+        if let viewModel = contactsViewModel {
+            return viewModel.getContactsCount()
         }
+        
         return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ContactTableViewCell") as! ContactTableViewCell
         
-        let contact = contactsViewModel!.contactsList[indexPath.row]
-        cell.contactCellViewModel = contact
-//        cell.userImageView.image = contact.userImage
-        if contact.userImage == nil {
-            contactsViewModel!.getUserImage(atIndex: indexPath.row) { (image) in
-                DispatchQueue.main.async {
-                    cell.userImageView.image = image
-                }
+        cell.nameLbl.text = contactsViewModel!.getFullName(atIndex: indexPath.row)
+        cell.favImageView.isHidden = !contactsViewModel!.isContactMarkedFav(atIndex: indexPath.row)
+    
+        cell.userImageView.image = nil
+        contactsViewModel!.getUserImage(atIndex: indexPath.row, completion: { [weak self] (image) in
+            guard let _ = self else {
+                return
             }
-        } else {
-            cell.userImageView.image = contact.userImage
-        }
+            
+            DispatchQueue.main.async {
+                cell.userImageView.image = image
+            }
+            
+        })
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        if let contactURL = contactsViewModel?.getContactURL(atIndex: indexPath.row) {
+            ContactsAPIHandler().getContactDetailsForPerson(contactURL: contactURL, completion: { [weak self] (dataModel) in
+                let viewContactViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ViewContactViewController") as! ViewContactViewController
+                viewContactViewController.contactViewModel = dataModel
+                
+                DispatchQueue.main.async {
+                    self?.navigationController?.pushViewController(viewContactViewController, animated: true)
+                }
+            })
+        }
     }
     
 }

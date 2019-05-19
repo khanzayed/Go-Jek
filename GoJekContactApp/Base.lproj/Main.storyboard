@@ -29,8 +29,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="59.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="First Last" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IeH-vq-H5c">
-                                                    <rect key="frame" x="60" y="19.5" width="65" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IeH-vq-H5c">
+                                                    <rect key="frame" x="60" y="19.5" width="0.0" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="Hrj-9C-x7e"/>
                                                     </constraints>
@@ -66,7 +66,6 @@
                                             <outlet property="favImageView" destination="3In-ej-sY5" id="0C7-nj-BzW"/>
                                             <outlet property="nameLbl" destination="IeH-vq-H5c" id="Iio-6b-gCx"/>
                                             <outlet property="userImageView" destination="M1d-ZT-uqb" id="eap-0p-KWs"/>
-                                            <segue destination="pBJ-0a-fUM" kind="show" id="94F-d8-r9o"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -95,10 +94,10 @@
             </objects>
             <point key="canvasLocation" x="992.79999999999995" y="26.53673163418291"/>
         </scene>
-        <!--Edit Contact View Controller-->
+        <!--View Contact View Controller-->
         <scene sceneID="BH0-1t-DSW">
             <objects>
-                <viewController storyboardIdentifier="EditContactViewController" id="pBJ-0a-fUM" customClass="EditContactViewController" customModule="GoJekContactApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ViewContactViewController" id="pBJ-0a-fUM" customClass="ViewContactViewController" customModule="GoJekContactApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="D9H-Zb-Xwv">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -451,8 +450,9 @@
                         <outlet property="callButton" destination="LbJ-Q9-aPA" id="ykB-CB-fep"/>
                         <outlet property="contactImageView" destination="aHz-ja-Oh8" id="PQP-cA-cI6"/>
                         <outlet property="emailButton" destination="3bG-4f-PgW" id="1gD-1u-Qu7"/>
-                        <outlet property="emailLbl" destination="Va2-cM-khW" id="6u4-s0-c3X"/>
+                        <outlet property="emailLbl" destination="UN8-qn-cIx" id="hXr-aT-rao"/>
                         <outlet property="favButton" destination="NOs-PY-boh" id="B8G-qq-uN6"/>
+                        <outlet property="favImageView" destination="qvJ-MP-6GW" id="LJ4-T4-5ac"/>
                         <outlet property="firstNameLbl" destination="5VH-Bn-r8v" id="ehE-VY-1c6"/>
                         <outlet property="imageBackgroundView" destination="VGu-ok-WGW" id="oNa-8K-NsR"/>
                         <outlet property="lastNameLbl" destination="QlZ-Ic-iFr" id="WyW-O0-oLC"/>

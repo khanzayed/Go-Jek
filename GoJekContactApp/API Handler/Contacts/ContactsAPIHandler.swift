@@ -24,10 +24,8 @@ class ContactsAPIHandler: APIHandler {
         }
     }
     
-    internal func getContactDetailsForPerson(userID: Int, completion:  @escaping (ContactDataModel) -> Void) {
-        let url = baseURL + "/contacts/\(userID).json"
-        
-        request(url, method: .GET, parameters: nil) { (jsonResponse, errorStr) in
+    internal func getContactDetailsForPerson(contactURL: String, completion:  @escaping (ContactDataModel) -> Void) {
+        request(contactURL, method: .GET, parameters: nil) { (jsonResponse, errorStr) in
             let contactDataModel = ContactDataModel(jsonResponse, errorMessage: errorStr)
             completion(contactDataModel)
         }

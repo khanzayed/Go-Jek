@@ -54,10 +54,11 @@ class APIHandler: NSObject {
                 let statusCode = StatusCode(rawValue: (urlResponse as! HTTPURLResponse).statusCode)
                 do {
                     let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
+                    print(jsonResponse)
                     
                     let reponse = Response(jsonResponse: jsonResponse, statusCode: statusCode)
                     completion(reponse)
-                } catch let _ {
+                } catch _ {
                     let reponse = Response(jsonResponse: nil, statusCode: .PARSING_ERROR)
                     completion(reponse)
                 }
@@ -124,6 +125,7 @@ enum HTTPMethod : String {
 
 enum StatusCode: Int {
     case SUCCESS = 200
+    case CREATED = 201
     case VALIDATION_ERROR = 422
     case NOT_FOUND = 404
     case INTERNAL_SERVER_ERROR = 500

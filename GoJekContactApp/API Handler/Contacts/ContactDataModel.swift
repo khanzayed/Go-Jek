@@ -29,8 +29,6 @@ protocol ContactsListViewModel {
     
     func updateContact(viewModel: ContactViewModel, atIndex: Int)
     
-    func addNewContact(viewModel: ContactViewModel?) -> Int?
-    
 }
 
 class ContactsDataModel: AppDataModel, ContactsListViewModel {
@@ -97,20 +95,6 @@ class ContactsDataModel: AppDataModel, ContactsListViewModel {
     
     func updateContact(viewModel: ContactViewModel, atIndex: Int) {
         contactsList[atIndex] = viewModel
-    }
-    
-    func addNewContact(viewModel: ContactViewModel?) -> Int? {
-        guard let model = viewModel else {
-            return nil
-        }
-        
-        if let index = contactsList.index(where: { $0.firstName > model.firstName }) {
-            contactsList.insert(model, at: index)
-            
-            return index
-        } else {
-            return nil
-        }
     }
     
     func getStatus() -> StatusCode {

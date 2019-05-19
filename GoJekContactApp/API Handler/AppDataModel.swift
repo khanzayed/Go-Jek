@@ -19,7 +19,7 @@ class AppDataModel {
         if let code = response.statusCode {
             statusCode = code
             switch code {
-            case .SUCCESS:
+            case .SUCCESS, .CREATED:
                 if let list = response.json as? [[String:Any]] {
                     self.list = list
                 } else if let details = response.json as? [String:Any] {

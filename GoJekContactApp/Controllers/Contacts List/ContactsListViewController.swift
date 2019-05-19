@@ -52,12 +52,15 @@ class ContactsListViewController: UIViewController {
 
     internal func getContacts() {
         contactsTableView.isHidden = true
+        activityIndicator.startAnimating()
+        activityIndicator.isHidden = false
+        
         ContactsAPIHandler().getContacts { [weak self] (dataModel) in
             guard let strongSelf = self else {
                 return
             }
             
-            if dataModel.getStatus() == .SUCCESS {
+            if dataModel.getStatus() == .SUCCESS || dataModel.getStatus() == .CREATED {
                 strongSelf.contactsViewModel = dataModel
             } else {
                 let alertVC = UIAlertController(title: "Error", message: dataModel.getErrorMessage(), preferredStyle: .alert)
@@ -79,12 +82,8 @@ class ContactsListViewController: UIViewController {
                     return
                 }
                 
-                if let newIndex = strongSelf.contactsViewModel?.addNewContact(viewModel: viewModel.getContact()) {
-                    DispatchQueue.main.async {
-                        strongSelf.contactsTableView.beginUpdates()
-                        strongSelf.contactsTableView.insertRows(at: [IndexPath(row: newIndex, section: 0)], with: .automatic)
-                        strongSelf.contactsTableView.endUpdates()
-                    }
+                DispatchQueue.main.async {
+                    strongSelf.getContacts()
                 }
             }
             
@@ -140,7 +139,7 @@ extension ContactsListViewController: UITableViewDataSource, UITableViewDelegate
         
         if let userID = contactsViewModel?.getUserID(atIndex: indexPath.row) {
             ContactsAPIHandler().getContactDetailsForPerson(userID: userID) { [weak self] (dataModel) in
-                if dataModel.getStatus() == .SUCCESS {
+                if dataModel.getStatus() == .SUCCESS || dataModel.getStatus() == .CREATED {
                     let viewContactViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ViewContactViewController") as! ViewContactViewController
                     viewContactViewController.contactViewModel = dataModel
                     viewContactViewController.atIndex = indexPath.row

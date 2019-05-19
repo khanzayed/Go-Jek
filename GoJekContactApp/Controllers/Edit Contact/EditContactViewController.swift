@@ -98,7 +98,7 @@ class EditContactViewController: UIViewController {
                 return
             }
             
-            if dataModel.getStatus() == .SUCCESS {
+            if dataModel.getStatus() == .SUCCESS || dataModel.getStatus() == .CREATED {
                 strongSelf.reloadData?(dataModel)
                 
                 DispatchQueue.main.async {

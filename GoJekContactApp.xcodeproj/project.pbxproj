@@ -20,6 +20,7 @@
 		D0D69A592290279800E3F8E2 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0D69A582290279800E3F8E2 /* ContactTableViewCell.swift */; };
 		D0D69A5C229076EB00E3F8E2 /* ViewContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0D69A5B229076EB00E3F8E2 /* ViewContactViewController.swift */; };
 		D0D69A5E22907A7400E3F8E2 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0D69A5D22907A7400E3F8E2 /* Colors.swift */; };
+		D0D69A622291441800E3F8E2 /* EditContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0D69A612291441800E3F8E2 /* EditContactViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		D0D69A582290279800E3F8E2 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 		D0D69A5B229076EB00E3F8E2 /* ViewContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewContactViewController.swift; sourceTree = "<group>"; };
 		D0D69A5D22907A7400E3F8E2 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		D0D69A612291441800E3F8E2 /* EditContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				D0D69A5B229076EB00E3F8E2 /* ViewContactViewController.swift */,
+				D0D69A612291441800E3F8E2 /* EditContactViewController.swift */,
 			);
 			path = "Edit Contact";
 			sourceTree = "<group>";
@@ -217,6 +220,7 @@
 				D0D69A592290279800E3F8E2 /* ContactTableViewCell.swift in Sources */,
 				D0D69A36228FCE7E00E3F8E2 /* ContactsListViewController.swift in Sources */,
 				D0D69A34228FCE7E00E3F8E2 /* AppDelegate.swift in Sources */,
+				D0D69A622291441800E3F8E2 /* EditContactViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

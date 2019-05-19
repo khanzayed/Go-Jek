@@ -89,6 +89,8 @@ protocol ViewContactViewModel {
     
     func getLastName() -> String
     
+    func getFullName() -> String
+    
     func getEmail() -> String
     
     func getMobile() -> String
@@ -119,6 +121,15 @@ class ContactDataModel: AppDataModel, ViewContactViewModel {
     
     func getLastName() -> String {
         return contact?.lastName ?? ""
+    }
+    
+    func getFullName() -> String {
+        var name = contact?.firstName ?? ""
+        if let lName = contact?.lastName {
+            name = name + " \(lName)"
+        }
+        
+        return name
     }
     
     func getEmail() -> String {

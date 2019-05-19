@@ -2,15 +2,14 @@
 //  EditContactViewController.swift
 //  GoJekContactApp
 //
-//  Created by Faraz on 18/05/19.
+//  Created by Faraz on 19/05/19.
 //  Copyright © 2019 Faraz. All rights reserved.
 //
 
 import UIKit
 
-class ViewContactViewController
-: UIViewController {
-
+class EditContactViewController: UIViewController {
+    
     @IBOutlet weak var imageBackgroundView: UIView!
     @IBOutlet weak var contactImageView: UIImageView!
     
@@ -33,7 +32,7 @@ class ViewContactViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupUI()
         updateUI()
     }
@@ -92,5 +91,5 @@ class ViewContactViewController
     @IBAction func favButtonTapped(_ sender: UIButton) {
         
     }
-
+    
 }

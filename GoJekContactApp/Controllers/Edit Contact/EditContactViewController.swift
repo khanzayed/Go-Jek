@@ -12,23 +12,18 @@ class EditContactViewController: UIViewController {
     
     @IBOutlet weak var imageBackgroundView: UIView!
     @IBOutlet weak var contactImageView: UIImageView!
+    @IBOutlet weak var cameraButton: UIButton!
     
-    @IBOutlet weak var favImageView: UIImageView!
-    
-    @IBOutlet weak var messageButton: UIButton!
-    @IBOutlet weak var callButton: UIButton!
-    @IBOutlet weak var emailButton: UIButton!
-    @IBOutlet weak var favButton: UIButton!
-    
-    @IBOutlet weak var fullNameLbl: UILabel!
-    @IBOutlet weak var firstNameLbl: UILabel!
-    @IBOutlet weak var lastNameLbl: UILabel!
-    @IBOutlet weak var emailLbl: UILabel!
-    @IBOutlet weak var mobileLbl: UILabel!
+    @IBOutlet weak var firstNameTextField: UITextField!
+    @IBOutlet weak var lastNameTextField: UITextField!
+    @IBOutlet weak var emailTextField: UITextField!
+    @IBOutlet weak var mobileTextField: UITextField!
     
     var gradientLayer: CAGradientLayer!
     
-    var contactViewModel: ViewContactViewModel?
+    var viewModel: ViewContactViewModel!
+    var saveButton: UIBarButtonItem!
+    var cancelButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,21 +44,21 @@ class EditContactViewController: UIViewController {
         gradientLayer.opacity = 0.7
         
         imageBackgroundView.layer.insertSublayer(gradientLayer, at: 0)
+        
+        saveButton = UIBarButtonItem(title: "Save", style: .done, target: self,
+                                     action: #selector(EditContactViewController.saveButtonTapped(_:)))
+        self.navigationItem.rightBarButtonItem = saveButton
+        
+        cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self,
+                                     action: #selector(EditContactViewController.cancelButtonTapped(_:)))
+        self.navigationItem.backBarButtonItem = cancelButton
     }
     
     private func updateUI() {
-        guard let viewModel = contactViewModel else {
-            return
-        }
-        
-        self.fullNameLbl.text =  viewModel.getFullName()
-        self.firstNameLbl.text = viewModel.getFirstName()
-        self.lastNameLbl.text = viewModel.getLastName()
-        self.emailLbl.text = viewModel.getEmail()
-        self.mobileLbl.text = viewModel.getMobile()
-        
-        let favImage = viewModel.isContactMarkedFav() ? UIImage(named: "favourite_selected") : UIImage(named: "favourite_unselected")
-        self.favImageView.image = favImage
+        self.firstNameTextField.text = viewModel.getFirstName()
+        self.lastNameTextField.text = viewModel.getLastName()
+        self.emailTextField.text = viewModel.getEmail()
+        self.mobileTextField.text = viewModel.getMobile()
         
         viewModel.getUserImage { [weak self] (image) in
             guard let strongSelf = self else {
@@ -76,20 +71,80 @@ class EditContactViewController: UIViewController {
         }
     }
     
-    @IBAction func messageButtonTapped(_ sender: UIButton) {
+    @objc private func cancelButtonTapped(_ sender: UIBarButtonItem) {
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    @objc private func saveButtonTapped(_ sender: UIBarButtonItem) {
+        let (isValid, message) = validateData()
+        if isValid {
+            let params: [String: Any] = [
+                "first_name"    :    firstNameTextField.text ?? "",
+                "last_name"     :    lastNameTextField.text ?? "",
+                "email"         :    emailTextField.text ?? "",
+                "phone_number"  :    mobileTextField.text ?? "",
+                "profile_pic"   :    "/images/missing.png",
+                "favorite"      :    false
+            ]
+            ContactsAPIHandler().saveContact(params: params) { [weak self] (dataModel) in
+                guard let _ = self else {
+                    return
+                }
+                
+                
+            }
+        } else {
+            print(message)
+        }
+    }
+    
+    private func validateData() -> (Bool, String) {
+        if let text = firstNameTextField.text, text.count == 0 {
+            return (false, "First name cannot be blank")
+        }
+        
+        if let text = mobileTextField.text, text.count == 0 {
+            return (false, "Contact number cannot be blank")
+        }
+        
+        return (true, "")
+    }
+    
+    @IBAction func cameraButtonTapped(_ sender: UIButton) {
         
     }
     
-    @IBAction func callButtonTapped(_ sender: UIButton) {
+}
+
+
+extension EditContactViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        var tag = textField.tag
+        if tag == 104 { // Email field
+            textField.resignFirstResponder()
+            
+            return true
+        } else {
+            tag += 1
+            if let nextTextField = self.view.viewWithTag(tag) as? UITextField {
+                nextTextField.becomeFirstResponder()
+                
+                return false
+            }
+        }
+        textField.resignFirstResponder()
         
+        return true
     }
     
-    @IBAction func emailButtonTapped(_ sender: UIButton) {
-        
-    }
-    
-    @IBAction func favButtonTapped(_ sender: UIButton) {
-        
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if string == " " {
+            return false
+        }
+        return true
     }
     
 }

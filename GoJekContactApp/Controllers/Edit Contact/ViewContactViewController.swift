@@ -30,6 +30,7 @@ class ViewContactViewController
     var gradientLayer: CAGradientLayer!
     
     var contactViewModel: ViewContactViewModel?
+    var editButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +51,10 @@ class ViewContactViewController
         gradientLayer.opacity = 0.7
         
         imageBackgroundView.layer.insertSublayer(gradientLayer, at: 0)
+        
+        editButton = UIBarButtonItem(title: "Edit", style: .done, target: self,
+                                     action: #selector(ViewContactViewController.editButtonTapped(_:)))
+        self.navigationItem.rightBarButtonItem = editButton
     }
     
     private func updateUI() {
@@ -74,6 +79,18 @@ class ViewContactViewController
             DispatchQueue.main.async {
                 strongSelf.contactImageView.image = image
             }
+        }
+    }
+    
+    @objc private func editButtonTapped(_ sender: UIBarButtonItem) {
+        guard let viewModel = contactViewModel else {
+            return
+        }
+        
+        let controller = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "EditContactViewController") as! EditContactViewController
+        controller.viewModel = viewModel
+        DispatchQueue.main.async {
+            self.navigationController?.pushViewController(controller, animated: true)
         }
     }
     

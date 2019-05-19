@@ -8,9 +8,11 @@
 
 import UIKit
 
-class ViewContactViewController
-: UIViewController {
-
+class ViewContactViewController: UIViewController {
+    
+    typealias UpdateDataInList = (Int, ContactViewModel?) -> Void
+    var updateData: UpdateDataInList?
+    
     @IBOutlet weak var imageBackgroundView: UIView!
     @IBOutlet weak var contactImageView: UIImageView!
     
@@ -30,6 +32,8 @@ class ViewContactViewController
     var gradientLayer: CAGradientLayer!
     
     var contactViewModel: ViewContactViewModel?
+    var atIndex: Int!
+    
     var editButton: UIBarButtonItem!
     
     override func viewDidLoad() {
@@ -89,6 +93,10 @@ class ViewContactViewController
         
         let controller = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "EditContactViewController") as! EditContactViewController
         controller.viewModel = viewModel
+        controller.reloadData = { [weak self] (updatedViewModel) in
+            self?.reloadData(updatedViewModel)
+        }
+        
         DispatchQueue.main.async {
             self.navigationController?.pushViewController(controller, animated: true)
         }
@@ -110,4 +118,18 @@ class ViewContactViewController
         
     }
 
+}
+
+extension ViewContactViewController {
+    
+    internal func reloadData(_ viewModel: ViewContactViewModel) {
+        self.contactViewModel = viewModel
+        
+        DispatchQueue.main.async {
+            self.updateUI()
+        }
+        
+        self.updateData?(atIndex, viewModel.getContact())
+    }
+    
 }

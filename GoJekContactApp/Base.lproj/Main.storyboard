@@ -502,7 +502,7 @@
                                         </constraints>
                                     </imageView>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="camera" translatesAutoresizingMaskIntoConstraints="NO" id="x1X-yn-UhN">
-                                        <rect key="frame" x="235" y="140" width="30" height="30"/>
+                                        <rect key="frame" x="220" y="130" width="30" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="30" id="1au-Qs-tJM"/>
                                             <constraint firstAttribute="height" constant="30" id="yKf-SM-fcE"/>
@@ -523,11 +523,11 @@
                                 <constraints>
                                     <constraint firstItem="g2e-SA-BFh" firstAttribute="top" secondItem="nhU-X2-ctG" secondAttribute="top" constant="20" id="11H-bx-UsC"/>
                                     <constraint firstItem="g2e-SA-BFh" firstAttribute="centerX" secondItem="nhU-X2-ctG" secondAttribute="centerX" id="6nM-qe-nki"/>
-                                    <constraint firstItem="x1X-yn-UhN" firstAttribute="top" secondItem="g2e-SA-BFh" secondAttribute="bottom" constant="-30" id="b1H-bX-hUm"/>
+                                    <constraint firstItem="x1X-yn-UhN" firstAttribute="top" secondItem="g2e-SA-BFh" secondAttribute="bottom" constant="-40" id="b1H-bX-hUm"/>
                                     <constraint firstAttribute="height" constant="200" id="rsv-3h-Mc2"/>
                                     <constraint firstItem="HbL-6C-3Xd" firstAttribute="centerX" secondItem="g2e-SA-BFh" secondAttribute="centerX" id="tVb-Kf-jWM"/>
                                     <constraint firstItem="HbL-6C-3Xd" firstAttribute="top" secondItem="g2e-SA-BFh" secondAttribute="top" id="uLb-EK-eUC"/>
-                                    <constraint firstItem="x1X-yn-UhN" firstAttribute="leading" secondItem="g2e-SA-BFh" secondAttribute="trailing" constant="-27.5" id="zuk-7a-Whu"/>
+                                    <constraint firstItem="x1X-yn-UhN" firstAttribute="leading" secondItem="g2e-SA-BFh" secondAttribute="trailing" constant="-42.5" id="zuk-7a-Whu"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DHp-i4-gPq">

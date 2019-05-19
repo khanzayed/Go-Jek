@@ -15,7 +15,7 @@ class ContactsAPIHandler: APIHandler {
         
     }
     
-    internal func getContacts(completion:  @escaping (ContactsDataModel) -> Void) {
+    internal func getContacts(completion:  @escaping (ContactsListViewModel) -> Void) {
         let url = baseURL + "/contacts.json"
         
         request(url, method: .GET, parameters: nil) { (jsonResponse, errorStr) in
@@ -24,14 +24,23 @@ class ContactsAPIHandler: APIHandler {
         }
     }
     
-    internal func getContactDetailsForPerson(contactURL: String, completion:  @escaping (ContactDataModel) -> Void) {
+    internal func getContactDetailsForPerson(contactURL: String, completion:  @escaping (ViewContactViewModel) -> Void) {
         request(contactURL, method: .GET, parameters: nil) { (jsonResponse, errorStr) in
             let contactDataModel = ContactDataModel(jsonResponse, errorMessage: errorStr)
             completion(contactDataModel)
         }
     }
     
-    internal func saveContact(params: [String:Any], completion:  @escaping (ContactDataModel) -> Void) {
+    internal func getContactDetailsForPerson(userID: Int, completion:  @escaping (ViewContactViewModel) -> Void) {
+        let url = baseURL + "/contacts/\(userID).json"
+        
+        request(url, method: .GET, parameters: nil) { (jsonResponse, errorStr) in
+            let contactDataModel = ContactDataModel(jsonResponse, errorMessage: errorStr)
+            completion(contactDataModel)
+        }
+    }
+    
+    internal func saveContact(params: [String:Any], completion:  @escaping (ViewContactViewModel) -> Void) {
         let url = baseURL + "/contacts.json"
         
         request(url, method: .POST, parameters: params) { (jsonResponse, errorStr) in
@@ -40,7 +49,7 @@ class ContactsAPIHandler: APIHandler {
         }
     }
     
-    internal func updateContact(params: [String:Any], completion:  @escaping (ContactDataModel) -> Void) {
+    internal func updateContact(params: [String:Any], completion:  @escaping (ViewContactViewModel) -> Void) {
         let url = baseURL + "/contacts.json"
         
         request(url, method: .PUT, parameters: params) { (jsonResponse, errorStr) in

@@ -13,6 +13,8 @@ protocol ContactsListViewModel {
     
     func getContactsCount() -> Int
     
+    func getUserID(atIndex: Int) -> Int
+    
     func getFullName(atIndex: Int) -> String
     
     func getUserImage(atIndex: Int, completion: @escaping (UIImage?) -> Void)
@@ -22,11 +24,16 @@ protocol ContactsListViewModel {
     func getContactURL(atIndex: Int) -> String?
     
     func getErrorMessage() -> String
+    
+    func updateContact(viewModel: ContactViewModel, atIndex: Int)
+    
+    func addNewContact(viewModel: ContactViewModel?) -> Int?
+    
 }
 
 class ContactsDataModel: AppDataModel, ContactsListViewModel {
     
-    var contactsList:[Contact] = []
+    var contactsList:[ContactViewModel] = []
     
     override init(_ jsonResponse: Any?, errorMessage: String?) {
         super.init(jsonResponse, errorMessage: errorMessage)
@@ -48,6 +55,11 @@ class ContactsDataModel: AppDataModel, ContactsListViewModel {
         }
         
         return name
+    }
+    
+    func getUserID(atIndex: Int) -> Int {
+        let contact = contactsList[atIndex]
+        return contact.id
     }
     
     func getUserImage(atIndex: Int, completion: @escaping (UIImage?) -> Void) {
@@ -81,9 +93,29 @@ class ContactsDataModel: AppDataModel, ContactsListViewModel {
         return super.errMessage ?? "Error"
     }
     
+    func updateContact(viewModel: ContactViewModel, atIndex: Int) {
+        contactsList[atIndex] = viewModel
+    }
+    
+    func addNewContact(viewModel: ContactViewModel?) -> Int? {
+        guard let model = viewModel else {
+            return nil
+        }
+        
+        if let index = contactsList.index(where: { $0.firstName > model.firstName }) {
+            contactsList.insert(model, at: index)
+            
+            return index
+        } else {
+            return nil
+        }
+    }
+    
 }
 
 protocol ViewContactViewModel {
+    
+    func getUserID() -> Int
     
     func getFirstName() -> String
     
@@ -97,15 +129,19 @@ protocol ViewContactViewModel {
     
     func getUserImage(completion: @escaping (UIImage?) -> Void)
     
+    func getContactURL() -> String?
+    
     func isContactMarkedFav() -> Bool
     
     func getErrorMessage() -> String
+    
+    func getContact() -> ContactViewModel?
     
 }
 
 class ContactDataModel: AppDataModel, ViewContactViewModel {
     
-    var contact:Contact?
+    var contact:ContactViewModel?
     
     override init(_ jsonResponse: Any?, errorMessage: String?) {
         super.init(jsonResponse, errorMessage: errorMessage)
@@ -113,6 +149,14 @@ class ContactDataModel: AppDataModel, ViewContactViewModel {
         if let details = super.details {
             contact = Contact(withDetail: details)
         }
+    }
+    
+    func getContact() -> ContactViewModel? {
+        return contact
+    }
+    
+    func getUserID() -> Int {
+        return contact!.id
     }
     
     func getFirstName() -> String {
@@ -159,6 +203,10 @@ class ContactDataModel: AppDataModel, ViewContactViewModel {
         }
     }
     
+    func getContactURL() -> String? {
+        return contact?.contactURLStr
+    }
+    
     func isContactMarkedFav() -> Bool {
         return contact?.isFavorite ?? false
     }
@@ -169,8 +217,21 @@ class ContactDataModel: AppDataModel, ViewContactViewModel {
     
 }
 
+protocol ContactViewModel {
+    
+    var id: Int { get }
+    var firstName: String { get }
+    var lastName: String? { get }
+    var profilePicUrlStr: String? { get }
+    var userImage: UIImage? { get set }
+    var isFavorite: Bool { get }
+    var contactURLStr: String? { get }
+    var email: String? { get }
+    var mobile: String? { get }
+    
+}
 
-class Contact {
+class Contact: ContactViewModel {
     
     var id: Int
     var firstName: String
@@ -192,5 +253,15 @@ class Contact {
         email = detail["email"] as? String
         mobile = detail["phone_number"] as? String
     }
+    
+//    fileprivate init(withUpdateData: Contact) {
+//        firstName = withUpdateData.firstName
+//        lastName = withUpdateData.lastName
+//        profilePicUrlStr = withUpdateData.profilePicUrlStr
+//        isFavorite = withUpdateData.isFavorite
+//        contactURLStr = withUpdateData.contactURLStr
+//        email = withUpdateData.email
+//        mobile = withUpdateData.mobile
+//    }
 
 }

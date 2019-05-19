@@ -10,6 +10,9 @@ import UIKit
 
 class EditContactViewController: UIViewController {
     
+    typealias ReloadDataOnSuccessfulSave = (ViewContactViewModel) -> Void
+    var reloadData: ReloadDataOnSuccessfulSave?
+    
     @IBOutlet weak var imageBackgroundView: UIView!
     @IBOutlet weak var contactImageView: UIImageView!
     @IBOutlet weak var cameraButton: UIButton!
@@ -21,7 +24,8 @@ class EditContactViewController: UIViewController {
     
     var gradientLayer: CAGradientLayer!
     
-    var viewModel: ViewContactViewModel!
+    var viewModel: ViewContactViewModel?
+    
     var saveButton: UIBarButtonItem!
     var cancelButton: UIBarButtonItem!
     
@@ -51,16 +55,16 @@ class EditContactViewController: UIViewController {
         
         cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self,
                                      action: #selector(EditContactViewController.cancelButtonTapped(_:)))
-        self.navigationItem.backBarButtonItem = cancelButton
+        self.navigationItem.leftBarButtonItem = cancelButton
     }
     
     private func updateUI() {
-        self.firstNameTextField.text = viewModel.getFirstName()
-        self.lastNameTextField.text = viewModel.getLastName()
-        self.emailTextField.text = viewModel.getEmail()
-        self.mobileTextField.text = viewModel.getMobile()
+        self.firstNameTextField.text = viewModel?.getFirstName() ?? ""
+        self.lastNameTextField.text = viewModel?.getLastName() ?? ""
+        self.emailTextField.text = viewModel?.getEmail() ?? ""
+        self.mobileTextField.text = viewModel?.getMobile() ?? ""
         
-        viewModel.getUserImage { [weak self] (image) in
+        viewModel?.getUserImage { [weak self] (image) in
             guard let strongSelf = self else {
                 return
             }
@@ -78,6 +82,8 @@ class EditContactViewController: UIViewController {
     }
     
     @objc private func saveButtonTapped(_ sender: UIBarButtonItem) {
+        self.view.endEditing(true)
+        
         let (isValid, message) = validateData()
         if isValid {
             let params: [String: Any] = [
@@ -86,14 +92,19 @@ class EditContactViewController: UIViewController {
                 "email"         :    emailTextField.text ?? "",
                 "phone_number"  :    mobileTextField.text ?? "",
                 "profile_pic"   :    "/images/missing.png",
-                "favorite"      :    false
+                "favorite"      :    viewModel?.isContactMarkedFav() ?? false
             ]
+            
             ContactsAPIHandler().saveContact(params: params) { [weak self] (dataModel) in
-                guard let _ = self else {
+                guard let strongSelf = self else {
                     return
                 }
                 
+                strongSelf.reloadData?(dataModel)
                 
+                DispatchQueue.main.async {
+                    strongSelf.navigationController?.popViewController(animated: true)
+                }
             }
         } else {
             print(message)

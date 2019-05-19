@@ -26,10 +26,19 @@ class ContactsListViewController: UIViewController {
         }
     }
     
+    var addButton: UIBarButtonItem!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        setupUI()
         getContacts()
+    }
+    
+    private func setupUI() {
+        addButton = UIBarButtonItem(title: "+", style: .done, target: self,
+                                     action: #selector(ContactsListViewController.addButtonTapped(_:)))
+        self.navigationItem.rightBarButtonItem = addButton
     }
 
     internal func getContacts() {
@@ -39,6 +48,27 @@ class ContactsListViewController: UIViewController {
             }
             
             strongSelf.contactsViewModel = dataModel
+        }
+    }
+    
+    @objc private func addButtonTapped(_ sender: UIBarButtonItem) {
+        let addViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "EditContactViewController") as! EditContactViewController
+        addViewController.reloadData = { [weak self] (viewModel) in
+            guard let strongSelf = self else {
+                return
+            }
+            
+            if let newIndex = strongSelf.contactsViewModel?.addNewContact(viewModel: viewModel.getContact()) {
+                DispatchQueue.main.async {
+                    strongSelf.contactsTableView.beginUpdates()
+                    strongSelf.contactsTableView.insertRows(at: [IndexPath(row: newIndex, section: 0)], with: .automatic)
+                    strongSelf.contactsTableView.endUpdates()
+                }
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.navigationController?.pushViewController(addViewController, animated: true)
         }
     }
     
@@ -86,15 +116,27 @@ extension ContactsListViewController: UITableViewDataSource, UITableViewDelegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        if let contactURL = contactsViewModel?.getContactURL(atIndex: indexPath.row) {
-            ContactsAPIHandler().getContactDetailsForPerson(contactURL: contactURL, completion: { [weak self] (dataModel) in
+        if let userID = contactsViewModel?.getUserID(atIndex: indexPath.row) {
+            ContactsAPIHandler().getContactDetailsForPerson(userID: userID) { [weak self] (dataModel) in
                 let viewContactViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ViewContactViewController") as! ViewContactViewController
                 viewContactViewController.contactViewModel = dataModel
+                viewContactViewController.atIndex = indexPath.row
+                
+                viewContactViewController.updateData = { [weak self] (index, updatedViewModel) in
+                    guard let strongSelf = self, let viewModel = updatedViewModel else {
+                        return
+                    }
+                    
+                    strongSelf.contactsViewModel?.updateContact(viewModel: viewModel, atIndex: index)
+                    DispatchQueue.main.async {
+                        strongSelf.contactsTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                    }
+                }
                 
                 DispatchQueue.main.async {
                     self?.navigationController?.pushViewController(viewContactViewController, animated: true)
                 }
-            })
+            }
         }
     }
     

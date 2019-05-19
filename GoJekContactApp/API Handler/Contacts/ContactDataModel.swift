@@ -23,6 +23,8 @@ protocol ContactsListViewModel {
     
     func getContactURL(atIndex: Int) -> String?
     
+    func getStatus() -> StatusCode
+    
     func getErrorMessage() -> String
     
     func updateContact(viewModel: ContactViewModel, atIndex: Int)
@@ -35,8 +37,8 @@ class ContactsDataModel: AppDataModel, ContactsListViewModel {
     
     var contactsList:[ContactViewModel] = []
     
-    override init(_ jsonResponse: Any?, errorMessage: String?) {
-        super.init(jsonResponse, errorMessage: errorMessage)
+    override init(_ jsonResponse: Response) {
+        super.init(jsonResponse)
         
         if let list = super.list {
             contactsList = list.map{ Contact(withDetail: $0) }
@@ -111,6 +113,10 @@ class ContactsDataModel: AppDataModel, ContactsListViewModel {
         }
     }
     
+    func getStatus() -> StatusCode {
+        return super.statusCode
+    }
+    
 }
 
 protocol ViewContactViewModel {
@@ -133,6 +139,8 @@ protocol ViewContactViewModel {
     
     func isContactMarkedFav() -> Bool
     
+    func getStatus() -> StatusCode
+    
     func getErrorMessage() -> String
     
     func getContact() -> ContactViewModel?
@@ -143,8 +151,8 @@ class ContactDataModel: AppDataModel, ViewContactViewModel {
     
     var contact:ContactViewModel?
     
-    override init(_ jsonResponse: Any?, errorMessage: String?) {
-        super.init(jsonResponse, errorMessage: errorMessage)
+    override init(_ jsonResponse: Response) {
+        super.init(jsonResponse)
         
         if let details = super.details {
             contact = Contact(withDetail: details)
@@ -213,6 +221,10 @@ class ContactDataModel: AppDataModel, ViewContactViewModel {
     
     func getErrorMessage() -> String {
         return super.errMessage ?? "Error"
+    }
+    
+    func getStatus() -> StatusCode {
+        return super.statusCode
     }
     
 }

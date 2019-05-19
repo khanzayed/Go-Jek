@@ -100,10 +100,14 @@ class EditContactViewController: UIViewController {
                     return
                 }
                 
-                strongSelf.reloadData?(dataModel)
-                
-                DispatchQueue.main.async {
-                    strongSelf.navigationController?.popViewController(animated: true)
+                if dataModel.getStatus() == .SUCCESS {
+                    strongSelf.reloadData?(dataModel)
+                    
+                    DispatchQueue.main.async {
+                        strongSelf.navigationController?.popViewController(animated: true)
+                    }
+                } else {
+                    print(dataModel.getErrorMessage())
                 }
             }
         } else {

@@ -23,7 +23,7 @@ class APIHandler: NSObject {
     }
     
     //MARK: API Calls
-    internal func request(_ url: String, method: HTTPMethod, parameters: [String:Any]?, completion: @escaping (Any?, String?) -> Void) {
+    internal func request(_ url: String, method: HTTPMethod, parameters: [String:Any]?, completion: @escaping (Response) -> Void) {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = getHeaders()
@@ -32,8 +32,9 @@ class APIHandler: NSObject {
             do {
                 let jsonData = try JSONSerialization.data(withJSONObject: params, options: .prettyPrinted)
                 request.httpBody = jsonData
-            } catch let parsingError {
-                completion(nil, parsingError.localizedDescription)
+            } catch let _ {
+                let reponse = Response(jsonResponse: nil, statusCode: .PARSING_ERROR)
+                completion(reponse)
                 
                 return
             }
@@ -47,16 +48,18 @@ class APIHandler: NSObject {
             
             if let err = error {
                 print(err.localizedDescription)
-                completion(nil, err.localizedDescription)
+                let reponse = Response(jsonResponse: nil, statusCode: .ERROR)
+                completion(reponse)
             } else if let data = responseData {
+                let statusCode = StatusCode(rawValue: (urlResponse as! HTTPURLResponse).statusCode)
                 do {
                     let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
                     
-                    print(jsonResponse)
-                    completion(jsonResponse, nil)
-                } catch let parsingError {
-                    print(parsingError.localizedDescription)
-                    completion(nil, parsingError.localizedDescription)
+                    let reponse = Response(jsonResponse: jsonResponse, statusCode: statusCode)
+                    completion(reponse)
+                } catch let _ {
+                    let reponse = Response(jsonResponse: nil, statusCode: .PARSING_ERROR)
+                    completion(reponse)
                 }
             }
         }
@@ -119,4 +122,24 @@ enum HTTPMethod : String {
     case DELETE
 }
 
+enum StatusCode: Int {
+    case SUCCESS = 200
+    case VALIDATION_ERROR = 422
+    case NOT_FOUND = 404
+    case INTERNAL_SERVER_ERROR = 500
+    case ERROR = 600
+    case PARSING_ERROR = 700
+}
 
+
+struct Response {
+    
+    var json: Any?
+    var statusCode: StatusCode?
+    
+    init(jsonResponse: Any?, statusCode: StatusCode?) {
+        self.json = jsonResponse
+        self.statusCode = statusCode
+    }
+    
+}

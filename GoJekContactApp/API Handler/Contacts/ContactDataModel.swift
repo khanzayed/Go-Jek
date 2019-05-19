@@ -255,7 +255,7 @@ class Contact: ContactViewModel {
     var email: String?
     var mobile: String?
     
-    fileprivate init(withDetail detail: [String: Any]) {
+    internal init(withDetail detail: [String: Any]) {
         id = detail["id"] as! Int
         firstName = detail["first_name"] as! String
         lastName = detail["last_name"] as? String

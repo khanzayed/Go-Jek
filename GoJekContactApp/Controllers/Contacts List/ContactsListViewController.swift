@@ -11,16 +11,25 @@ import UIKit
 class ContactsListViewController: UIViewController {
 
     @IBOutlet weak var contactsTableView: UITableView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var contactsViewModel: ContactsListViewModel? {
         didSet {
             if let viewModel = contactsViewModel {
                 if viewModel.getContactsCount() > 0{
                     DispatchQueue.main.async {
+                        self.activityIndicator.stopAnimating()
+                        self.contactsTableView.isHidden = false
                         self.contactsTableView.reloadData()
                     }
                 } else {
-                    print(viewModel.getErrorMessage())
+                    let alertVC = UIAlertController(title: "Error", message: viewModel.getErrorMessage(), preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                    
+                    alertVC.addAction(okAction)
+                    DispatchQueue.main.async {
+                        self?.navigationController?.present(alertVC, animated: true, completion: nil)
+                    }
                 }
             }
         }
@@ -42,33 +51,46 @@ class ContactsListViewController: UIViewController {
     }
 
     internal func getContacts() {
+        contactsTableView.isHidden = true
         ContactsAPIHandler().getContacts { [weak self] (dataModel) in
             guard let strongSelf = self else {
                 return
             }
             
-            strongSelf.contactsViewModel = dataModel
+            if dataModel.getStatus() == .SUCCESS {
+                strongSelf.contactsViewModel = dataModel
+            } else {
+                let alertVC = UIAlertController(title: "Error", message: dataModel.getErrorMessage(), preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                
+                alertVC.addAction(okAction)
+                DispatchQueue.main.async {
+                    self?.navigationController?.present(alertVC, animated: true, completion: nil)
+                }
+            }
         }
     }
     
     @objc private func addButtonTapped(_ sender: UIBarButtonItem) {
-        let addViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "EditContactViewController") as! EditContactViewController
-        addViewController.reloadData = { [weak self] (viewModel) in
-            guard let strongSelf = self else {
-                return
-            }
-            
-            if let newIndex = strongSelf.contactsViewModel?.addNewContact(viewModel: viewModel.getContact()) {
-                DispatchQueue.main.async {
-                    strongSelf.contactsTableView.beginUpdates()
-                    strongSelf.contactsTableView.insertRows(at: [IndexPath(row: newIndex, section: 0)], with: .automatic)
-                    strongSelf.contactsTableView.endUpdates()
+        if activityIndicator.isAnimating == false {
+            let addViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "EditContactViewController") as! EditContactViewController
+            addViewController.reloadData = { [weak self] (viewModel) in
+                guard let strongSelf = self else {
+                    return
+                }
+                
+                if let newIndex = strongSelf.contactsViewModel?.addNewContact(viewModel: viewModel.getContact()) {
+                    DispatchQueue.main.async {
+                        strongSelf.contactsTableView.beginUpdates()
+                        strongSelf.contactsTableView.insertRows(at: [IndexPath(row: newIndex, section: 0)], with: .automatic)
+                        strongSelf.contactsTableView.endUpdates()
+                    }
                 }
             }
-        }
-        
-        DispatchQueue.main.async {
-            self.navigationController?.pushViewController(addViewController, animated: true)
+            
+            DispatchQueue.main.async {
+                self.navigationController?.pushViewController(addViewController, animated: true)
+            }
         }
     }
     
@@ -118,24 +140,35 @@ extension ContactsListViewController: UITableViewDataSource, UITableViewDelegate
         
         if let userID = contactsViewModel?.getUserID(atIndex: indexPath.row) {
             ContactsAPIHandler().getContactDetailsForPerson(userID: userID) { [weak self] (dataModel) in
-                let viewContactViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ViewContactViewController") as! ViewContactViewController
-                viewContactViewController.contactViewModel = dataModel
-                viewContactViewController.atIndex = indexPath.row
-                
-                viewContactViewController.updateData = { [weak self] (index, updatedViewModel) in
-                    guard let strongSelf = self, let viewModel = updatedViewModel else {
-                        return
+                if dataModel.getStatus() == .SUCCESS {
+                    let viewContactViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ViewContactViewController") as! ViewContactViewController
+                    viewContactViewController.contactViewModel = dataModel
+                    viewContactViewController.atIndex = indexPath.row
+                    
+                    viewContactViewController.updateData = { [weak self] (index, updatedViewModel) in
+                        guard let strongSelf = self, let viewModel = updatedViewModel else {
+                            return
+                        }
+                        
+                        strongSelf.contactsViewModel?.updateContact(viewModel: viewModel, atIndex: index)
+                        DispatchQueue.main.async {
+                            strongSelf.contactsTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                        }
                     }
                     
-                    strongSelf.contactsViewModel?.updateContact(viewModel: viewModel, atIndex: index)
                     DispatchQueue.main.async {
-                        strongSelf.contactsTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                        self?.navigationController?.pushViewController(viewContactViewController, animated: true)
+                    }
+                } else {
+                    let alertVC = UIAlertController(title: "Error", message: dataModel.getErrorMessage(), preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                    
+                    alertVC.addAction(okAction)
+                    DispatchQueue.main.async {
+                        self?.navigationController?.present(alertVC, animated: true, completion: nil)
                     }
                 }
                 
-                DispatchQueue.main.async {
-                    self?.navigationController?.pushViewController(viewContactViewController, animated: true)
-                }
             }
         }
     }

@@ -84,34 +84,35 @@ class EditContactViewController: UIViewController {
     @objc private func saveButtonTapped(_ sender: UIBarButtonItem) {
         self.view.endEditing(true)
         
-        let (isValid, message) = validateData()
-        if isValid {
-            let params: [String: Any] = [
-                "first_name"    :    firstNameTextField.text ?? "",
-                "last_name"     :    lastNameTextField.text ?? "",
-                "email"         :    emailTextField.text ?? "",
-                "phone_number"  :    mobileTextField.text ?? "",
-                "profile_pic"   :    "/images/missing.png",
-                "favorite"      :    viewModel?.isContactMarkedFav() ?? false
-            ]
+        let params: [String: Any] = [
+            "first_name"    :    firstNameTextField.text ?? "",
+            "last_name"     :    lastNameTextField.text ?? "",
+            "email"         :    emailTextField.text ?? "",
+            "phone_number"  :    mobileTextField.text ?? "",
+            "profile_pic"   :    "/images/missing.png",
+            "favorite"      :    viewModel?.isContactMarkedFav() ?? false
+        ]
+        
+        ContactsAPIHandler().saveContact(params: params) { [weak self] (dataModel) in
+            guard let strongSelf = self else {
+                return
+            }
             
-            ContactsAPIHandler().saveContact(params: params) { [weak self] (dataModel) in
-                guard let strongSelf = self else {
-                    return
-                }
+            if dataModel.getStatus() == .SUCCESS {
+                strongSelf.reloadData?(dataModel)
                 
-                if dataModel.getStatus() == .SUCCESS {
-                    strongSelf.reloadData?(dataModel)
-                    
-                    DispatchQueue.main.async {
-                        strongSelf.navigationController?.popViewController(animated: true)
-                    }
-                } else {
-                    print(dataModel.getErrorMessage())
+                DispatchQueue.main.async {
+                    strongSelf.navigationController?.popViewController(animated: true)
+                }
+            } else {
+                let alertVC = UIAlertController(title: "Error", message: dataModel.getErrorMessage(), preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                
+                alertVC.addAction(okAction)
+                DispatchQueue.main.async {
+                    self?.navigationController?.present(alertVC, animated: true, completion: nil)
                 }
             }
-        } else {
-            print(message)
         }
     }
     

@@ -74,19 +74,25 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="h16-wO-RHu"/>
                                 </connections>
                             </tableView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="gvc-GO-Mvm">
+                                <rect key="frame" x="177.5" y="291.5" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="dMH-tG-ANY" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="G4Q-hj-dnf"/>
                             <constraint firstItem="dMH-tG-ANY" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="S0g-Lk-dYf"/>
                             <constraint firstItem="dMH-tG-ANY" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="U9g-0j-Ida"/>
+                            <constraint firstItem="gvc-GO-Mvm" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="a4D-7Y-y2v"/>
                             <constraint firstItem="dMH-tG-ANY" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="mSS-nw-dIa"/>
+                            <constraint firstItem="gvc-GO-Mvm" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="nDW-5Q-uAS"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="Contacts" id="9lE-w8-9zO"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
+                        <outlet property="activityIndicator" destination="gvc-GO-Mvm" id="uWd-uJ-BvI"/>
                         <outlet property="contactsTableView" destination="dMH-tG-ANY" id="2XK-kX-hhB"/>
                     </connections>
                 </viewController>

@@ -25,6 +25,8 @@ class EditContactViewController: UIViewController {
     var gradientLayer: CAGradientLayer!
     
     var viewModel: ViewContactViewModel?
+    var selectedField: UITextField!
+    var keyboardHeight: CGFloat = 0
     
     var saveButton: UIBarButtonItem!
     var cancelButton: UIBarButtonItem!
@@ -34,6 +36,9 @@ class EditContactViewController: UIViewController {
         
         setupUI()
         updateUI()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(EditContactViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(EditContactViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     private func setupUI() {
@@ -78,6 +83,23 @@ class EditContactViewController: UIViewController {
     @objc private func cancelButtonTapped(_ sender: UIBarButtonItem) {
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            keyboardHeight = keyboardSize.height
+            
+            let offset = selectedField.superview!.frame.origin.y
+            if (UIScreen.main.bounds.height - keyboardSize.height) < (260 + offset) {
+                    self.view.frame.origin.y -= min(offset, keyboardSize.height)
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
         }
     }
     
@@ -136,11 +158,17 @@ class EditContactViewController: UIViewController {
 
 
 extension EditContactViewController: UITextFieldDelegate {
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        selectedField = textField
+        
+        return true
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         var tag = textField.tag
         if tag == 104 { // Email field
             textField.resignFirstResponder()
+            self.view.frame.origin.y = 0
             
             return true
         } else {
@@ -148,10 +176,16 @@ extension EditContactViewController: UITextFieldDelegate {
             if let nextTextField = self.view.viewWithTag(tag) as? UITextField {
                 nextTextField.becomeFirstResponder()
                 
+                let offset = nextTextField.superview!.frame.origin.y
+                if (UIScreen.main.bounds.height - keyboardHeight) < (260 + offset) {
+                    self.view.frame.origin.y = -min(offset, keyboardHeight)
+                }
+                
                 return false
             }
         }
         textField.resignFirstResponder()
+        self.view.frame.origin.y = 0
         
         return true
     }
